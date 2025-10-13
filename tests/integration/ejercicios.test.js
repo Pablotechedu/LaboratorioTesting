@@ -24,7 +24,6 @@ afterEach(async () => {
 describe("🎓 EJERCICIOS PARA ESTUDIANTES", () => {
   // EJERCICIO 1: Completar esta prueba
   test("TODO: Implementar PUT /api/tareas/:id - actualizar tarea", async () => {
-
     // PISTA:
     // 1. Crear una tarea
     // 2. Hacer PUT con datos actualizados
@@ -35,7 +34,7 @@ describe("🎓 EJERCICIOS PARA ESTUDIANTES", () => {
       .put(`/api/tareas/${tarea._id}`)
       .send({ title: "Tarea actualizada", completed: true });
 
-    TODO: expect(res.status).toBe(200);
+    expect(res.status).toBe(200);
     expect(res.body.title).toBe("Tarea actualizada");
     expect(res.body.completed).toBe(true);
   });
@@ -47,7 +46,18 @@ describe("🎓 EJERCICIOS PARA ESTUDIANTES", () => {
     // 2. Hacer DELETE
     // 3. Verificar que se eliminó (404 en GET)
 
-    expect(true).toBe(true); // Placeholder - ¡reemplazar!
+    const tarea = await Tarea.create({
+      title: "Tarea a eliminar",
+      completed: false,
+    });
+    const res = await request(app).delete(`/api/tareas/${tarea._id}`);
+
+    expect(res.status).toBe(204); // Placeholder - ¡reemplazar!
+    const tareaEliminada = await Tarea.findById(tarea._id);
+    expect(tareaEliminada).toBeNull(); // ¡Debe ser null!
+
+    const getRes = await request(app).get(`/api/tareas/${tarea._id}`);
+    expect(getRes.status).toBe(404);
   });
 
   // EJERCICIO 3: Prueba de validación
