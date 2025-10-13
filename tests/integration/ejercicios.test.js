@@ -63,7 +63,12 @@ describe("🎓 EJERCICIOS PARA ESTUDIANTES", () => {
   // EJERCICIO 3: Prueba de validación
   test("TODO: POST /api/tareas con title vacío debe fallar", async () => {
     // PISTA: Enviar { title: "" } y verificar error
-    expect(true).toBe(true); // Placeholder - ¡reemplazar!
+    const res = await request(app).post("/api/tareas").send({ title: "" });
+
+    expect(res.status).toBe(500); // Bad Request
+
+    const tareas = await Tarea.find();
+    expect(tareas).toHaveLength(0); // No debe haber tareas
   });
 
   // EJERCICIO 4: Prueba con múltiples tareas
@@ -71,7 +76,31 @@ describe("🎓 EJERCICIOS PARA ESTUDIANTES", () => {
     // PISTA:
     // 1. Crear varias tareas con delays
     // 2. Verificar orden en la respuesta
-    expect(true).toBe(true); // Placeholder - ¡reemplazar!
+
+    const tarea1 = await Tarea.create({
+      title: "Primera tarea",
+      completed: false,
+    });
+    await new Promise((resolve) => setTimeout(resolve, 10)); // Delay 10ms
+
+    const tarea2 = await Tarea.create({
+      title: "Segunda tarea",
+      completed: false,
+    });
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    const tarea3 = await Tarea.create({
+      title: "Tercera tarea",
+      completed: false,
+    });
+
+    const res = await request(app).get("/api/tareas");
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(3);
+    expect(res.body[0].title).toBe("Primera tarea");
+    expect(res.body[1].title).toBe("Segunda tarea");
+    expect(res.body[2].title).toBe("Tercera tarea");
   });
 
   // EJERCICIO 5: Prueba de edge case
