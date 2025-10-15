@@ -121,7 +121,5 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual([]);
     expect(res.body).toHaveLength(0);
-
-    expect(true).toBe(true); // Placeholder - ¡reemplazar!
   });
 });
