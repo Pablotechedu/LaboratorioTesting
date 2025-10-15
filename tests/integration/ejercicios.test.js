@@ -106,6 +106,8 @@ describe("🎓 EJERCICIOS PARA ESTUDIANTES", () => {
   // EJERCICIO 5: Prueba de edge case
   test("TODO: GET /api/tareas/:id con ID inválido debe devolver 500", async () => {
     // PISTA: Usar un ID que no sea ObjectId válido (ej: "123")
-    expect(true).toBe(true); // Placeholder - ¡reemplazar!
+
+    const res = await request(app).get("/api/tareas/123");
+    expect(res.status).toBe(500);
   });
 });
