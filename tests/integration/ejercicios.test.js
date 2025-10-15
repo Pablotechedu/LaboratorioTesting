@@ -37,6 +37,12 @@ describe("🎓 EJERCICIOS PARA ESTUDIANTES", () => {
     expect(res.status).toBe(200);
     expect(res.body.title).toBe("Tarea actualizada");
     expect(res.body.completed).toBe(true);
+    
+    // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
+    // - PUT se usa para actualizar recursos completos
+    // - Código 200 OK indica éxito con contenido en la respuesta
+    // - Verificación dual: respuesta HTTP + base de datos
+    // - Siempre verificar tanto la respuesta como la BD, la API podría responder OK sin guardar
   });
 
   // EJERCICIO 2: Completar esta prueba
@@ -52,12 +58,19 @@ describe("🎓 EJERCICIOS PARA ESTUDIANTES", () => {
     });
     const res = await request(app).delete(`/api/tareas/${tarea._id}`);
 
-    expect(res.status).toBe(204); // Placeholder - ¡reemplazar!
+    expect(res.status).toBe(204);
     const tareaEliminada = await Tarea.findById(tarea._id);
     expect(tareaEliminada).toBeNull(); // ¡Debe ser null!
 
     const getRes = await request(app).get(`/api/tareas/${tarea._id}`);
     expect(getRes.status).toBe(404);
+    
+    // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
+    // - DELETE se usa para eliminar recursos
+    // - Código 204 No Content = éxito sin datos (porque se eliminó)
+    // - Diferencia: 200 devuelve datos, 204 no devuelve nada
+    // - Verificación triple: DELETE exitoso + BD vacía + GET devuelve 404
+    // - Por qué 204? Porque la tarea fue eliminada, no hay nada que mostrar
   });
 
   // EJERCICIO 3: Prueba de validación
@@ -65,10 +78,17 @@ describe("🎓 EJERCICIOS PARA ESTUDIANTES", () => {
     // PISTA: Enviar { title: "" } y verificar error
     const res = await request(app).post("/api/tareas").send({ title: "" });
 
-    expect(res.status).toBe(500); // Bad Request
+    expect(res.status).toBe(500); // Sin validación en el servidor, MongoDB lanza error interno (500)
 
     const tareas = await Tarea.find();
     expect(tareas).toHaveLength(0); // No debe haber tareas
+    
+    // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
+    // - Diferencia entre 400 (Bad Request) y 500 (Server Error)
+    // - Sin validación del servidor, MongoDB lanza error interno (500)
+    // - Lo ideal sería validar antes de guardar y devolver 400
+    // - Por qué 500? El servidor NO valida, MongoDB rechaza y lanza error interno
+    // - Situación ideal: servidor valida primero y devuelve 400 (error del cliente)
   });
 
   // EJERCICIO 4: Prueba con múltiples tareas
@@ -101,6 +121,13 @@ describe("🎓 EJERCICIOS PARA ESTUDIANTES", () => {
     expect(res.body[0].title).toBe("Primera tarea");
     expect(res.body[1].title).toBe("Segunda tarea");
     expect(res.body[2].title).toBe("Tercera tarea");
+    
+    // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
+    // - Trabajar con múltiples registros en tests
+    // - Uso de setTimeout con Promises para crear delays
+    // - Verificar orden de resultados en arrays
+    // - Por qué delays? Sin ellos, las tareas se crearían en el mismo milisegundo
+    // - Los delays garantizan fechas diferentes para verificar ordenamiento
   });
 
   // EJERCICIO 5: Prueba de edge case
@@ -109,5 +136,13 @@ describe("🎓 EJERCICIOS PARA ESTUDIANTES", () => {
 
     const res = await request(app).get("/api/tareas/123");
     expect(res.status).toBe(500);
+    
+    // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
+    // - Edge cases: casos extremos o inusuales
+    // - Diferencia entre ID inválido (formato incorrecto) vs ID inexistente (formato correcto)
+    // - MongoDB ObjectId requiere 24 caracteres hexadecimales
+    // - ID inválido "123" causa error de casteo, devuelve 500
+    // - ID válido pero inexistente devuelve 404
+    // - El servidor debería validar formatos y devolver 400 en lugar de 500
   });
 });

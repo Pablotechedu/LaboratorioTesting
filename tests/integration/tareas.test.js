@@ -40,6 +40,12 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
 
     const tareaInDB = await Tarea.find();
     console.log("👨🏻‍💻 Revisión de datos creados en la prueba", tareaInDB);
+    
+    // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
+    // - POST se usa para crear nuevos recursos
+    // - Código 201 Created indica que el recurso fue creado exitosamente
+    // - Verificar que el _id esté definido confirma que se guardó en BD
+    // - Siempre verificar tanto la respuesta HTTP como la base de datos
   });
 
   // EJERCICIO 2: Implementar la prueba para obtener todas las tareas
@@ -64,6 +70,13 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
       "👨🏻‍💻 GET - Revisión de datos en la BD antes de la prueba",
       TareaInDB
     );
+    
+    // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
+    // - GET se usa para obtener recursos
+    // - Código 200 OK indica éxito con datos
+    // - Verificar longitud del array con .length o .toHaveLength()
+    // - Verificar contenido específico de cada elemento del array
+    // - Crear datos de prueba directamente en BD con Tarea.create()
   });
 
   // EJERCICIO 3: Implementar la prueba para obtener una tarea específica
@@ -82,6 +95,12 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.title).toBe("Tarea específica");
     expect(res.body._id).toBe(tarea._id.toString());
+    
+    // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
+    // - GET con parámetro dinámico :id en la URL
+    // - Usar template literals para construir URLs dinámicas
+    // - Convertir ObjectId a string con .toString() para comparación
+    // - Verificar que se devuelve exactamente la tarea solicitada
   });
 
   // ✅ EJERCICIO 4: Implementar la prueba para un ID inexistente
@@ -95,6 +114,13 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
     const res = await request(app).get(`/api/tareas/${idInexistente}`);
 
     expect(res.statusCode).toBe(404);
+    
+    // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
+    // - Diferencia entre ID inválido vs ID inexistente
+    // - new mongoose.Types.ObjectId() crea un ID válido pero que no existe en BD
+    // - Código 404 Not Found indica que el recurso no existe
+    // - ID válido pero inexistente: 404
+    // - ID inválido (formato incorrecto): 500
   });
 
   // EJERCICIO 5: Implementar la prueba para un campo requerido
@@ -107,6 +133,13 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
 
     expect(res.statusCode).toBe(500);
     expect(res.body).toHaveProperty("error");
+    
+    // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
+    // - Validación de campos requeridos
+    // - Sin validación del servidor, devuelve 500 (error interno)
+    // - .toHaveProperty() verifica que existe una propiedad en el objeto
+    // - Lo ideal sería que el servidor validara y devolviera 400
+    // - Mismo concepto que ejercicios.test.js Ejercicio 3
   });
 
   // EJERCICIO 6: Implementar la prueba para una lista vacía
@@ -121,5 +154,12 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual([]);
     expect(res.body).toHaveLength(0);
+    
+    // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
+    // - Probar casos cuando no hay datos (edge case)
+    // - afterEach limpia la BD, garantizando que esté vacía
+    // - .toEqual([]) verifica que sea exactamente un array vacío
+    // - Código 200 OK es correcto incluso con array vacío
+    // - Diferencia entre "no hay datos" (200 + []) vs "no encontrado" (404)
   });
 });
