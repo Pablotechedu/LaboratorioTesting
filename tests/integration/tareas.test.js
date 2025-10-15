@@ -103,7 +103,10 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
     // 1. Haz una petición `POST` con un objeto vacío o sin el campo `title`.
     // 2. Verifica el `statusCode` de error y que el cuerpo de la respuesta contenga un mensaje de validación.
 
-    expect(true).toBe(true); // Placeholder - ¡reemplazar!
+    const res = await request(app).post("/api/tareas").send({});
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body).toHaveProperty("error");
   });
 
   // EJERCICIO 6: Implementar la prueba para una lista vacía
@@ -112,6 +115,12 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
     // 1. Asegúrate de que no haya tareas en la base de datos (`afterEach` se encarga de esto).
     // 2. Haz una petición `GET`.
     // 3. Verifica que la respuesta tenga un `statusCode` de 200 y que el cuerpo sea un array vacío.
+
+    const res = await request(app).get("/api/tareas");
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual([]);
+    expect(res.body).toHaveLength(0);
 
     expect(true).toBe(true); // Placeholder - ¡reemplazar!
   });
