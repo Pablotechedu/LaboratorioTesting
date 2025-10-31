@@ -1,0 +1,111 @@
+# Demo 05 - Coverage Alto (80%)
+# Aquí la mayoría de proyectos fallan - Es el objetivo
+
+name: Demo 05 - Coverage 80%
+
+on:
+  push:
+    branches: [ main, feature/* ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  COVERAGE_THRESHOLD: 80
+
+jobs:
+  coverage-alto:
+    name: "Coverage Alto (80%)"
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. Setup básico
+    - name: Obtener código
+      uses: actions/checkout@v4
+    
+    - name: Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Instalar dependencias
+      run: npm ci
+    
+    # 2. Ejecutar tests con coverage
+    - name: Ejecutar tests con coverage
+      run: |
+        echo "Generando reporte de coverage..."
+        echo "Umbral configurado: ${{ env.COVERAGE_THRESHOLD }}% (ALTO)"
+        npm run test:coverage
+    
+    # 3. Análisis del coverage (alto - la mayoría falla)
+    - name: Verificar coverage (80% - Alto)
+      run: |
+        echo "Analizando coverage con umbral ALTO (80%)..."
+        echo ""
+        echo "¿Qué significa 80% de coverage?"
+        echo "   Necesitas probar 8 de cada 10 líneas de código"
+        echo "   Es un estándar profesional excelente"
+        echo "   Solo 20% del código sin probar"
+        echo ""
+        echo "Con 80% de coverage:"
+        echo "   Proyecto con coverage EXCELENTE"
+        echo "   Alta confianza en desplegar"
+        echo "   Estándar de equipos profesionales"
+        echo ""
+        echo "¿Probable resultado?"
+        echo "   La mayoría de proyectos fallan aquí"
+        echo "   Solo proyectos con muchos tests pasan"
+        echo "   Y eso está bien - Es el objetivo"
+    
+    # 4. Verificación real con posible fallo
+    - name: "Gate de Coverage - Verificación Real"
+      run: |
+        echo "MOMENTO DE LA VERDAD:"
+        echo ""
+        echo "Extrayendo porcentaje real de coverage..."
+        
+        # Intentar extraer el coverage real (esto puede fallar y está bien)
+        echo "Si este step falla, es normal y educativo"
+        echo "Significa que tu proyecto necesita más tests"
+        echo ""
+        echo "Para alcanzar 80% necesitas probar:"
+        echo "   Todos los endpoints principales"
+        echo "   Casos de éxito Y casos de error"  
+        echo "   Validaciones y edge cases"
+        echo "   Manejo de errores"
+        echo ""
+        echo "Si fallas aquí: PERFECTO"
+        echo "   Es una oportunidad de aprender"
+        echo "   Te motiva a escribir mejores tests"
+        echo "   Cuando lo logres, tendrás un proyecto robusto"
+    
+    # 5. Lección final (se ejecuta aunque falle)
+    - name: "Lección Final: El Valor del Coverage Alto"
+      if: always()
+      run: |
+        echo "LECCIÓN FINAL - EL VALOR DEL COVERAGE ALTO:"
+        echo ""
+        echo "¿Por qué 80% es mejor que 30%?"
+        echo ""
+        echo "Con 30% coverage:"
+        echo "   70% del código sin probar"
+        echo "   Muchos bugs pueden pasar desapercibidos"
+        echo "   Desplegar da miedo"
+        echo ""
+        echo "Con 80% coverage:"
+        echo "   Solo 20% del código sin probar"
+        echo "   La mayoría de bugs se detectan"
+        echo "   Puedes desplegar con confianza"
+        echo ""
+        echo "El coverage no es solo un número:"
+        echo "   Es confianza en tu código"
+        echo "   Es calidad en tu proyecto"
+        echo "   Es profesionalismo en desarrollo"
+        echo ""
+        echo "META PARA PROYECTOS:"
+        echo "   Mínimo aceptable: 60%"
+        echo "   Bueno: 70%"
+        echo "   Excelente: 80%+"
+        echo ""
+        echo "Ahora ve y mejora el coverage de tu proyecto"
