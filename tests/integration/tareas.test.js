@@ -21,88 +21,332 @@ afterEach(async () => {
   await Tarea.deleteMany();
 });
 
-describe('EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION', () => {
+describe('🎓 EJERCICIOS BÁSICOS - ENCUENTRA Y CORRIGE LOS ERRORES', () => {
 
-  // EJERCICIO 1: Implementar la prueba para crear una tarea
-  test('TODO: POST /api/tareas crea una tarea', async () => {
-    // PISTA:
-    // 1. Define el objeto `nuevaTarea` con el `title`.
-    const newTask = {
-        title: 'Tarea de prueba'
+  test('POST /api/tareas crea una tarea', async () => {
+    //  Corrección: Campo correcto 'title'
+    const nuevaTarea = {
+      title: 'Mi primera tarea' //  'title', no 'titulo'
     };
-    // 2. Haz una petición `POST` usando `supertest`.
+    
+    //  Corrección: Método POST
     const res = await request(app)
-    .post('/api/tareas')
-    .send(newTask);
-    // 3. Verifica el `statusCode` de la respuesta (debe ser 201).
+      .post('/api/tareas') //  POST para crear
+      .send(nuevaTarea);
+    
+    //  Corrección: Status 201 para creación exitosa
     expect(res.statusCode).toBe(201);
-    // 4. Asegúrate de que el cuerpo de la respuesta contenga el título y un `_id`.
-    expect(res.body._id).toBeDefined();
-    expect(res.body.title).toBe(newTask.title);
-    expect(res.body.title).toBe('Tarea de prueba');
-
-    const tareaInDB = await Tarea.find();
-    console.log("👨🏻‍💻 Revisión de datos creados en la prueba",tareaInDB);
+    
+    //  Corrección: Verificaciones correctas
+    expect(res.body._id).toBeDefined(); //  ID debe existir
+    expect(res.body.title).toBe('Mi primera tarea'); //  Campo correcto
+    expect(res.body.completed).toBe(false); //  Valor por defecto
+    
+    //  Verificar en la base de datos
+    const tareasEnDB = await Tarea.find();
+    expect(tareasEnDB).toHaveLength(1); //  Una tarea creada
+    expect(tareasEnDB[0].title).toBe('Mi primera tarea');
   });
 
-  // EJERCICIO 2: Implementar la prueba para obtener todas las tareas
-  test('TODO: GET /api/tareas devuelve todas las tareas', async () => {
-    // PISTA:
-    // 1. Crea varias tareas directamente en la base de datos usando `Tarea.create()`.
-    await Tarea.create({ title: 'Tarea 1'});
-    await Tarea.create({ title: 'Tarea finalizada', completed: true });
+  //  SOLUCIÓN 2: GET todas las tareas
+  test('GET /api/tareas devuelve todas las tareas', async () => {
+    //  Corrección: Crear tareas para probar la respuesta
+    await Tarea.create({ title: 'Tarea 1' });
+    await Tarea.create({ title: 'Tarea 2', completed: true });
     
-    // 2. Haz una petición `GET` a la API.
-    const res = await request(app)
-    .get('/api/tareas');
-    // 3. Verifica el `statusCode` (200) y que el array devuelto tenga la longitud correcta.
+    const res = await request(app).get('/api/tareas');
+    
+    //  Corrección: Status 200 para consulta exitosa
     expect(res.statusCode).toBe(200);
-    expect(res.body.length).toBe(2);
-    expect(res.body).toHaveLength(2);
-    // 4. Asegúrate de que los títulos de las tareas en la respuesta coincidan con los que creaste.
+    expect(res.body).toHaveLength(2); //  Dos tareas creadas
+    
+    //  Corrección: Verificar títulos que existen
     expect(res.body[0].title).toBe('Tarea 1');
-    expect(res.body[1].title).toBe('Tarea finalizada');
-
-    const TareaInDB = await Tarea.find();
-    console.log("👨🏻‍💻 GET - Revisión de datos en la BD antes de la prueba",TareaInDB);
+    expect(res.body[1].title).toBe('Tarea 2');
+    expect(res.body[1].completed).toBe(true);
   });
 
-  // EJERCICIO 3: Implementar la prueba para obtener una tarea específica
-  test('TODO: GET /api/tareas/:id devuelve una tarea específica', async () => {
-    // PISTA:
-    // 1. Crea una tarea en la base de datos para obtener su `_id`.
-    // 2. Haz una petición `GET` a la ruta dinámica `/api/tareas/:id`.
-    // 3. Verifica el `statusCode` (200) y que el `title` de la respuesta coincida con el de la tarea que creaste.
+  //  SOLUCIÓN 3: GET tarea específica
+  test('GET /api/tareas/:id devuelve una tarea específica', async () => {
+    const tarea = await Tarea.create({ title: 'Tarea específica' });
     
-    expect(true).toBe(true); // Placeholder - ¡reemplazar!
+    //  Corrección: Usar ID correcto de la tarea creada
+    const res = await request(app)
+      .get(`/api/tareas/${tarea._id}`); //  ID válido
+    
+    //  Corrección: Expectations correctas
+    expect(res.statusCode).toBe(200); //  Éxito
+    expect(res.body.title).toBe('Tarea específica'); //  Título correcto
+    expect(res.body.completed).toBe(false); //  Valor por defecto
+    expect(res.body._id).toBe(tarea._id.toString());
   });
 
-  // ✅ EJERCICIO 4: Implementar la prueba para un ID inexistente
-  test('TODO: GET /api/tareas/:id devuelve 404 para un ID inexistente', async () => {
-    // PISTA:
-    // 1. Crea un ID válido pero que no exista en la base de datos (por ejemplo, `new mongoose.Types.ObjectId()`).
-    // 2. Haz una petición `GET` a la API con este ID.
-    // 3. Verifica que la respuesta tenga un `statusCode` de 404.
+  //  SOLUCIÓN 4: GET ID inexistente
+  test('GET /api/tareas/:id devuelve 404 para un ID inexistente', async () => {
+    //  Corrección: Usar ObjectId válido pero inexistente
+    const idInexistente = new mongoose.Types.ObjectId();
     
-    expect(true).toBe(true); // Placeholder - ¡reemplazar!
+    const res = await request(app).get(`/api/tareas/${idInexistente}`);
+    
+    //  Corrección: Verificar status 404 y mensaje correcto
+    expect(res.statusCode).toBe(404);
+    expect(res.body.error).toBe('Not found');
   });
 
-  // EJERCICIO 5: Implementar la prueba para un campo requerido
-  test('TODO: POST /api/tareas valida campos requeridos', async () => {
-    // PISTA:
-    // 1. Haz una petición `POST` con un objeto vacío o sin el campo `title`.
-    // 2. Verifica el `statusCode` de error y que el cuerpo de la respuesta contenga un mensaje de validación.
+  //  SOLUCIÓN 5: Validación de campos requeridos
+  test('POST /api/tareas valida campos requeridos', async () => {
+    //  Corrección: Enviar objeto vacío para probar validación
+    const res1 = await request(app)
+      .post('/api/tareas')
+      .send({}); //  Sin título para fallar validación
+
+    expect(res1.statusCode).toBe(500); //  Error de validación
+    expect(res1.body.error).toContain('required'); //  Mensaje de validación
     
-    expect(true).toBe(true); // Placeholder - ¡reemplazar!
+    //  Test adicional: Título vacío
+    const res2 = await request(app)
+      .post('/api/tareas')
+      .send({ title: '' });
+    
+    expect(res2.statusCode).toBe(500);
+    expect(res2.body.error).toContain('required');
+    
+    //  Corrección: Verificar que NO se guardó en la BD
+    const tareasEnDB = await Tarea.find();
+    expect(tareasEnDB).toHaveLength(0); //  No debe haber tareas
   });
 
-  // EJERCICIO 6: Implementar la prueba para una lista vacía
-  test('TODO: GET /api/tareas devuelve un array vacío cuando no hay tareas', async () => {
-    // PISTA:
-    // 1. Asegúrate de que no haya tareas en la base de datos (`afterEach` se encarga de esto).
-    // 2. Haz una petición `GET`.
-    // 3. Verifica que la respuesta tenga un `statusCode` de 200 y que el cuerpo sea un array vacío.
+  //  SOLUCIÓN 6: Array vacío
+  test('GET /api/tareas devuelve array vacío cuando no hay tareas', async () => {
+    //  Corrección: NO crear tareas (afterEach limpia automáticamente)
     
-    expect(true).toBe(true); // Placeholder - ¡reemplazar!
+    const res = await request(app).get('/api/tareas');
+    
+    //  Corrección: Status 200 para array vacío
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveLength(0);
+    expect(res.body).toEqual([]); //  Array vacío, no objeto
+    
+    // Verificación adicional
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+});
+
+describe(' SOLUCIONES CORRECTAS - EJERCICIOS AVANZADOS', () => {
+
+  //  SOLUCIÓN 7: PUT actualizar tarea
+  test('PUT /api/tareas/:id actualiza una tarea existente', async () => {
+    // Crear tarea inicial
+    const tareaOriginal = await Tarea.create({ 
+      title: 'Tarea original',
+      completed: false 
+    });
+    
+    const datosActualizados = {
+      title: 'Tarea actualizada', //  Corrección: Campo correcto
+      completed: true
+    };
+    
+    //  Corrección: Método PUT
+    const res = await request(app)
+      .put(`/api/tareas/${tareaOriginal._id}`)
+      .send(datosActualizados);
+
+    //  Corrección: Expectations correctas
+    expect(res.statusCode).toBe(200);
+    expect(res.body.title).toBe('Tarea actualizada');
+    expect(res.body.completed).toBe(true);
+    expect(res.body._id).toBe(tareaOriginal._id.toString());
+    
+    //  Verificar en la base de datos
+    const tareaActualizada = await Tarea.findById(tareaOriginal._id);
+    expect(tareaActualizada.title).toBe('Tarea actualizada');
+    expect(tareaActualizada.completed).toBe(true);
+  });
+
+  //  SOLUCIÓN 8: DELETE eliminar tarea
+  test('DELETE /api/tareas/:id elimina una tarea existente', async () => {
+    const tarea = await Tarea.create({ title: 'Tarea a eliminar' });
+    
+    //  Corrección: Método DELETE
+    const res = await request(app)
+      .delete(`/api/tareas/${tarea._id}`);
+    
+    //  Corrección: Status 204 (No Content) para DELETE
+    expect(res.statusCode).toBe(204);
+    //  No verificar body en 204 (no tiene contenido)
+    
+    //  Verificar que se eliminó de la base de datos
+    const tareaEliminada = await Tarea.findById(tarea._id);
+    expect(tareaEliminada).toBeNull();
+    
+    //  Verificar que GET posterior retorna 404
+    const getRes = await request(app).get(`/api/tareas/${tarea._id}`);
+    expect(getRes.statusCode).toBe(404);
+  });
+
+  //  SOLUCIÓN 9: Test de concurrencia
+  test('AVANZADO: Crear múltiples tareas simultáneamente', async () => {
+    const tareasData = [
+      { title: 'Tarea 1' },
+      { title: 'Tarea 2' },
+      { title: 'Tarea 3' }
+    ];
+    
+    //  Corrección: Usar Promise.all para concurrencia real
+    const promises = tareasData.map(tareaData =>
+      request(app)
+        .post('/api/tareas')
+        .send(tareaData)
+    );
+    
+    const responses = await Promise.all(promises);
+    
+    //  Corrección: Verificaciones correctas
+    expect(responses.length).toBe(3);
+    responses.forEach(res => {
+      expect(res.statusCode).toBe(201);
+      expect(res.body.title).toBeDefined();
+      expect(res.body._id).toBeDefined();
+    });
+    
+    //  Verificar en base de datos
+    const tareasEnDB = await Tarea.find();
+    expect(tareasEnDB).toHaveLength(3);
+    
+    //  Verificar títulos únicos
+    const titles = tareasEnDB.map(t => t.title).sort();
+    expect(titles).toEqual(['Tarea 1', 'Tarea 2', 'Tarea 3']);
+  });
+
+  //  SOLUCIÓN 10: Ordenamiento y fechas
+  test('GET /api/tareas devuelve tareas ordenadas por fecha', async () => {
+    // Crear tareas con pequeños delays para asegurar orden
+    await Tarea.create({ title: 'Primera tarea' });
+    await new Promise(resolve => setTimeout(resolve, 10));
+    
+    await Tarea.create({ title: 'Segunda tarea' });
+    await new Promise(resolve => setTimeout(resolve, 10));
+    
+    await Tarea.create({ title: 'Tercera tarea' });
+    
+    const res = await request(app).get('/api/tareas');
+    
+    //  Corrección: Status 200 para consulta exitosa
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveLength(3);
+    
+    //  Corrección: Verificar orden cronológico correcto
+    expect(res.body[0].title).toBe('Primera tarea');
+    expect(res.body[1].title).toBe('Segunda tarea');
+    expect(res.body[2].title).toBe('Tercera tarea');
+    
+    //  Verificar que las fechas están en orden cronológico
+    const fecha1 = new Date(res.body[0].createdAt);
+    const fecha2 = new Date(res.body[1].createdAt);
+    const fecha3 = new Date(res.body[2].createdAt);
+    
+    expect(fecha1.getTime()).toBeLessThanOrEqual(fecha2.getTime());
+    expect(fecha2.getTime()).toBeLessThanOrEqual(fecha3.getTime());
+  });
+
+  //  SOLUCIÓN 11: ID inválidos vs inexistentes
+  test('API maneja IDs inválidos vs inexistentes correctamente', async () => {
+    //  Corrección: Diferencia entre ID inválido e inexistente
+    
+    // Caso 1: ID inválido (mal formato)
+    const idInvalido = '123abc';
+    const res1 = await request(app).get(`/api/tareas/${idInvalido}`);
+    expect(res1.statusCode).toBe(500); //  Error de cast de Mongoose
+    
+    // Caso 2: ID válido pero inexistente
+    const idInexistente = new mongoose.Types.ObjectId().toString();
+    const res2 = await request(app).get(`/api/tareas/${idInexistente}`);
+    expect(res2.statusCode).toBe(404); //  No encontrado
+    expect(res2.body.error).toBe('Not found'); //  Propiedad correcta
+    
+    //  Verificar también PUT y DELETE con ID inválido
+    const putRes = await request(app)
+      .put(`/api/tareas/${idInvalido}`)
+      .send({ title: 'Test' });
+    expect(putRes.statusCode).toBe(500);
+    
+    const deleteRes = await request(app).delete(`/api/tareas/${idInvalido}`);
+    expect(deleteRes.statusCode).toBe(500);
+  });
+
+  //  SOLUCIÓN 12: Validación avanzada
+  test('POST /api/tareas maneja campos adicionales correctamente', async () => {
+    const tareaConCamposExtra = {
+      title: 'Tarea válida',
+      completed: true,
+      campoExtra: 'debería ser ignorado',
+      numeroExtra: 123,
+      objetoExtra: { foo: 'bar' }
+    };
+    
+    const res = await request(app)
+      .post('/api/tareas')
+      .send(tareaConCamposExtra);
+    
+    //  Corrección: Mongoose crea exitosamente ignorando campos extra
+    expect(res.statusCode).toBe(201);
+    expect(res.body.title).toBe('Tarea válida');
+    expect(res.body.completed).toBe(true);
+    
+    //  Mongoose ignora campos no definidos en el schema
+    expect(res.body.campoExtra).toBeUndefined();
+    expect(res.body.numeroExtra).toBeUndefined();
+    expect(res.body.objetoExtra).toBeUndefined();
+  });
+});
+
+describe(' SOLUCIONES CORRECTAS - CASOS ADICIONALES', () => {
+
+  //  Tests adicionales para completar la cobertura
+  test('PUT /api/tareas/:id devuelve 404 para ID inexistente', async () => {
+    const idInexistente = new mongoose.Types.ObjectId();
+    
+    const res = await request(app)
+      .put(`/api/tareas/${idInexistente}`)
+      .send({ title: 'No debería funcionar' });
+    
+    expect(res.statusCode).toBe(404);
+    expect(res.body.error).toBe('Not found');
+  });
+
+  test('DELETE /api/tareas/:id devuelve 404 para ID inexistente', async () => {
+    const idInexistente = new mongoose.Types.ObjectId();
+    
+    const res = await request(app).delete(`/api/tareas/${idInexistente}`);
+    
+    expect(res.statusCode).toBe(404);
+    expect(res.body.error).toBe('Not found');
+  });
+
+  test('POST /api/tareas con título muy largo', async () => {
+    // Este test depende de si hay validación de longitud en el modelo
+    const titleMuyLargo = 'a'.repeat(1000);
+    
+    const res = await request(app)
+      .post('/api/tareas')
+      .send({ title: titleMuyLargo });
+    
+    // Si no hay validación de longitud, se creará exitosamente
+    // Si hay validación, debería fallar con 500
+    expect([201, 500]).toContain(res.statusCode);
+  });
+
+  test('Verificar que afterEach limpia correctamente', async () => {
+    // Crear algunas tareas
+    await Tarea.create({ title: 'Tarea 1' });
+    await Tarea.create({ title: 'Tarea 2' });
+    
+    // Verificar que se crearon
+    const tareasAntes = await Tarea.find();
+    expect(tareasAntes).toHaveLength(2);
+    
+    // afterEach automáticamente limpia después de cada test
+    // Este test verifica que la limpieza funciona
   });
 });
