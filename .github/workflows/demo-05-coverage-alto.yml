@@ -39,24 +39,67 @@ jobs:
         npm run test:coverage
     
     # 3. Análisis del coverage (alto - la mayoría falla)
-    - name: Verificar coverage (80% - Alto)
+    - name: "Gate de Coverage - Verificación Real"
       run: |
-        echo "Analizando coverage con umbral ALTO (80%)..."
+        echo "MOMENTO DE LA VERDAD:"
         echo ""
-        echo "¿Qué significa 80% de coverage?"
-        echo "   Necesitas probar 8 de cada 10 líneas de código"
-        echo "   Es un estándar profesional excelente"
-        echo "   Solo 20% del código sin probar"
+        echo "Extrayendo porcentaje real de coverage..."
+        
+        # MÉTODO 1: Usar Jest con formato JSON para precisión
+        echo "Ejecutando tests con coverage en formato JSON..."
+        npm run test:coverage -- --coverageReporters=json-summary --silent
+        
+        # Leer el archivo de coverage JSON
+        if [ -f coverage/coverage-summary.json ]; then
+          COVERAGE_PERCENT=$(node -p "Math.floor(JSON.parse(require('fs').readFileSync('coverage/coverage-summary.json', 'utf8')).total.lines.pct)")
+          echo " Coverage extraído del reporte JSON: $COVERAGE_PERCENT%"
+        else
+          # MÉTODO 2: Fallback - extraer del output de Jest
+          echo "  Archivo JSON no encontrado, usando método alternativo..."
+          COVERAGE_OUTPUT=$(npm run test:coverage 2>&1)
+          COVERAGE_PERCENT=$(echo "$COVERAGE_OUTPUT" | grep -oE 'All files[^|]*\|[^|]*\|[^|]*\|[^|]*\|[[:space:]]*[0-9]+(\.[0-9]+)?' | grep -oE '[0-9]+(\.[0-9]+)?$' | head -1)
+          COVERAGE_PERCENT=${COVERAGE_PERCENT%.*}  # Remover decimales
+          echo "Coverage extraído del output: $COVERAGE_PERCENT%"
+        fi
+        
+        # Validar que tenemos un número
+        if ! [[ "$COVERAGE_PERCENT" =~ ^[0-9]+$ ]]; then
+          echo " Error: No se pudo extraer el coverage"
+          echo "Output de coverage:"
+          npm run test:coverage
+          exit 1
+        fi
+        
+        THRESHOLD=${{ env.COVERAGE_THRESHOLD }}
+        
         echo ""
-        echo "Con 80% de coverage:"
-        echo "   Proyecto con coverage EXCELENTE"
-        echo "   Alta confianza en desplegar"
-        echo "   Estándar de equipos profesionales"
+        echo " Coverage objetivo: $THRESHOLD%"
+        echo " Coverage actual: $COVERAGE_PERCENT%"
         echo ""
-        echo "¿Probable resultado?"
-        echo "   La mayoría de proyectos fallan aquí"
-        echo "   Solo proyectos con muchos tests pasan"
-        echo "   Y eso está bien - Es el objetivo"
+        
+        # VALIDACIÓN REAL: Fallar si no alcanza el umbral
+        if [ "$COVERAGE_PERCENT" -lt "$THRESHOLD" ]; then
+          echo "❌ COVERAGE INSUFICIENTE"
+          echo "   Necesitas: $THRESHOLD%"
+          echo "   Tienes: $COVERAGE_PERCENT%"
+          echo "   Faltante: $((THRESHOLD - COVERAGE_PERCENT))%"
+          echo ""
+          echo "🚨 EL PIPELINE FALLARÁ AQUÍ 🚨"
+          echo "Esto es REAL - necesitas más tests"
+          echo ""
+          echo "Para alcanzar $THRESHOLD% necesitas probar:"
+          echo "   ✓ Todos los endpoints principales"
+          echo "   ✓ Casos de éxito Y casos de error"  
+          echo "   ✓ Validaciones y edge cases"
+          echo "   ✓ Manejo de errores"
+          exit 1
+        else
+          echo "COVERAGE EXCELENTE"
+          echo "   Objetivo: $THRESHOLD%"
+          echo "   Actual: $COVERAGE_PERCENT%"
+          echo "   Exceso: +$((COVERAGE_PERCENT - THRESHOLD))%"
+          echo "   ¡Felicitaciones! "
+        fi
     
     # 4. Verificación real con posible fallo
     - name: "Gate de Coverage - Verificación Real"
