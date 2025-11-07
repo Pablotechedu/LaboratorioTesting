@@ -103,6 +103,7 @@ jobs:
               echo "  → La mayoría de proyectos fallan aquí"
               echo "  → Es una oportunidad de aprender"
               echo "  → Significa que necesitas más tests"
+              exit 1  # Hacer que el paso falle
             else
               echo "COVERAGE EXCELENTE"
               echo "   ¡Felicitaciones! Tu proyecto tiene excelente cobertura"
