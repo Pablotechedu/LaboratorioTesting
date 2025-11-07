@@ -60,7 +60,7 @@ jobs:
         echo ""
         npm run test:coverage
     
-    # 4. Verificación educativa (puede fallar)
+    # 4. Verificación de coverage (puede fallar)
     - name: "Verificación de Coverage - Momento de la Verdad"
       run: |
         echo "VERIFICANDO COVERAGE..."
