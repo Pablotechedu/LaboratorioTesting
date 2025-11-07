@@ -49,7 +49,7 @@ describe('🎓 EJERCICIOS BÁSICOS - ENCUENTRA Y CORRIGE LOS ERRORES', () => {
   });
 
   //  SOLUCIÓN 2: GET todas las tareas
-  /* test('GET /api/tareas devuelve todas las tareas', async () => {
+   test('GET /api/tareas devuelve todas las tareas', async () => {
     //  Corrección: Crear tareas para probar la respuesta
     await Tarea.create({ title: 'Tarea 1' });
     await Tarea.create({ title: 'Tarea 2', completed: true });
@@ -65,7 +65,7 @@ describe('🎓 EJERCICIOS BÁSICOS - ENCUENTRA Y CORRIGE LOS ERRORES', () => {
     expect(res.body[1].title).toBe('Tarea 2');
     expect(res.body[1].completed).toBe(true);
   });
-
+});
   //  SOLUCIÓN 3: GET tarea específica
   test('GET /api/tareas/:id devuelve una tarea específica', async () => {
     const tarea = await Tarea.create({ title: 'Tarea específica' });
@@ -129,10 +129,9 @@ describe('🎓 EJERCICIOS BÁSICOS - ENCUENTRA Y CORRIGE LOS ERRORES', () => {
     
     // Verificación adicional
     expect(Array.isArray(res.body)).toBe(true);
-  }); */
-});
+  }); 
 
-/* describe(' SOLUCIONES CORRECTAS - EJERCICIOS AVANZADOS', () => {
+describe(' SOLUCIONES CORRECTAS - EJERCICIOS AVANZADOS', () => {
 
   //  SOLUCIÓN 7: PUT actualizar tarea
   test('PUT /api/tareas/:id actualiza una tarea existente', async () => {
@@ -349,4 +348,4 @@ describe(' SOLUCIONES CORRECTAS - CASOS ADICIONALES', () => {
     // afterEach automáticamente limpia después de cada test
     // Este test verifica que la limpieza funciona
   });
-}); */
+}); 
