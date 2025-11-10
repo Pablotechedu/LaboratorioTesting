@@ -207,3 +207,5 @@ MIT - Proyecto educativo libre para uso en clases y talleres.
 ---
 
 **¿Preguntas?** Revisar la documentación en `/docs/` o ejecutar `npm run docker:logs` para diagnosticar problemas.
+---
+**Nota:** Este `README.md` ha sido actualizado para activar el workflow de GitHub Actions.
