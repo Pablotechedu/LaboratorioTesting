@@ -23,30 +23,48 @@ afterEach(async () => {
 
 describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
   // EJERCICIO 1: Implementar la prueba para crear una tarea
-  test("TODO: POST /api/tareas crea una tarea", async () => {
-    // PISTA:
-    // 1. Define el objeto `nuevaTarea` con el `title`.
-    const newTask = {
-      title: "Tarea de prueba",
-    };
-    // 2. Haz una petición `POST` usando `supertest`.
-    const res = await request(app).post("/api/tareas").send(newTask);
-    // 3. Verifica el `statusCode` de la respuesta (debe ser 201).
-    expect(res.statusCode).toBe(201);
-    // 4. Asegúrate de que el cuerpo de la respuesta contenga el título y un `_id`.
-    expect(res.body._id).toBeDefined();
-    expect(res.body.title).toBe(newTask.title);
-    expect(res.body.title).toBe("Tarea de prueba");
 
-    const tareaInDB = await Tarea.find();
-    console.log("👨🏻‍💻 Revisión de datos creados en la prueba", tareaInDB);
-    
-    // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
-    // - POST se usa para crear nuevos recursos
-    // - Código 201 Created indica que el recurso fue creado exitosamente
-    // - Verificar que el _id esté definido confirma que se guardó en BD
-    // - Siempre verificar tanto la respuesta HTTP como la base de datos
+  test("POST /api/tareas crea una tarea", async () => {
+    const nuevaTarea = {
+      title: "Mi primera tarea",
+    };
+
+    const res = await request(app).post("/api/tareas").send(nuevaTarea);
+
+    expect(res.statusCode).toBe(201);
+
+    expect(res.body._id).toBeDefined();
+    expect(res.body.title).toBe("Mi primera tarea");
+
+    // Verificar en la base de datos
+    const tareasEnDB = await Tarea.find();
+    expect(tareasEnDB).toHaveLength(1);
   });
+
+  // test("TODO: POST /api/tareas crea una tarea", async () => {
+  //   // PISTA:
+  //   // 1. Define el objeto `nuevaTarea` con el `title`.
+  //   const newTask = {
+  //     title: "Tarea de prueba",
+  //   };
+  //   // 2. Haz una petición `POST` usando `supertest`.
+  //   const res = await request(app).post("/api/tareas").send(newTask);
+  //   // 3. Verifica el `statusCode` de la respuesta (debe ser 201).
+  //   expect(res.statusCode).toBe(201);
+  //   // 4. Asegúrate de que el cuerpo de la respuesta contenga el título y un `_id`.
+  //   expect(res.body._id).toBeDefined();
+  //   expect(res.body.title).toBe(newTask.title);
+  //   expect(res.body.title).toBe("Tarea de prueba");
+
+  //   const tareaInDB = await Tarea.find();
+  //   console.log("👨🏻‍💻 Revisión de datos creados en la prueba", tareaInDB);
+
+  //   // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
+  //   // - POST se usa para crear nuevos recursos
+  //   // - Código 201 Created indica que el recurso fue creado exitosamente
+  //   // - Verificar que el _id esté definido confirma que se guardó en BD
+  //   // - Siempre verificar tanto la respuesta HTTP como la base de datos
+  // });
 
   // EJERCICIO 2: Implementar la prueba para obtener todas las tareas
   test("TODO: GET /api/tareas devuelve todas las tareas", async () => {
@@ -70,7 +88,7 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
       "👨🏻‍💻 GET - Revisión de datos en la BD antes de la prueba",
       TareaInDB
     );
-    
+
     // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
     // - GET se usa para obtener recursos
     // - Código 200 OK indica éxito con datos
@@ -95,7 +113,7 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.title).toBe("Tarea específica");
     expect(res.body._id).toBe(tarea._id.toString());
-    
+
     // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
     // - GET con parámetro dinámico :id en la URL
     // - Usar template literals para construir URLs dinámicas
@@ -114,7 +132,7 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
     const res = await request(app).get(`/api/tareas/${idInexistente}`);
 
     expect(res.statusCode).toBe(404);
-    
+
     // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
     // - Diferencia entre ID inválido vs ID inexistente
     // - new mongoose.Types.ObjectId() crea un ID válido pero que no existe en BD
@@ -133,7 +151,7 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
 
     expect(res.statusCode).toBe(500);
     expect(res.body).toHaveProperty("error");
-    
+
     // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
     // - Validación de campos requeridos
     // - Sin validación del servidor, devuelve 500 (error interno)
@@ -154,7 +172,7 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual([]);
     expect(res.body).toHaveLength(0);
-    
+
     // CONCEPTOS APRENDIDOS EN ESTE EJERCICIO:
     // - Probar casos cuando no hay datos (edge case)
     // - afterEach limpia la BD, garantizando que esté vacía
