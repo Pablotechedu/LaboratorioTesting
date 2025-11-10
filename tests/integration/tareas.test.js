@@ -180,4 +180,74 @@ describe("EJEMPLOS PRACTICOS DE PRUEBAS DE INTEGRACION", () => {
     // - Código 200 OK es correcto incluso con array vacío
     // - Diferencia entre "no hay datos" (200 + []) vs "no encontrado" (404)
   });
+
+  // NUEVAS PRUEBAS PARA ALCANZAR 80% DE COBERTURA
+
+  // Prueba para actualizar una tarea (PUT)
+  test("PUT /api/tareas/:id actualiza una tarea existente", async () => {
+    const tarea = await Tarea.create({
+      title: "Tarea original",
+      completed: false,
+    });
+
+    const actualizacion = {
+      title: "Tarea actualizada",
+      completed: true,
+    };
+
+    const res = await request(app)
+      .put(`/api/tareas/${tarea._id}`)
+      .send(actualizacion);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.title).toBe("Tarea actualizada");
+    expect(res.body.completed).toBe(true);
+
+    // Verificar en la base de datos
+    const tareaActualizada = await Tarea.findById(tarea._id);
+    expect(tareaActualizada.title).toBe("Tarea actualizada");
+    expect(tareaActualizada.completed).toBe(true);
+  });
+
+  // Prueba para actualizar una tarea inexistente (PUT)
+  test("PUT /api/tareas/:id devuelve 404 para una tarea inexistente", async () => {
+    const idInexistente = new mongoose.Types.ObjectId();
+    const actualizacion = {
+      title: "Tarea actualizada",
+      completed: true,
+    };
+
+    const res = await request(app)
+      .put(`/api/tareas/${idInexistente}`)
+      .send(actualizacion);
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  // Prueba para eliminar una tarea (DELETE)
+  test("DELETE /api/tareas/:id elimina una tarea existente", async () => {
+    const tarea = await Tarea.create({
+      title: "Tarea a eliminar",
+      completed: false,
+    });
+
+    const res = await request(app).delete(`/api/tareas/${tarea._id}`);
+
+    expect(res.statusCode).toBe(204);
+
+    // Verificar que la tarea fue eliminada de la base de datos
+    const tareaEliminada = await Tarea.findById(tarea._id);
+    expect(tareaEliminada).toBeNull();
+  });
+
+  // Prueba para eliminar una tarea inexistente (DELETE)
+  test("DELETE /api/tareas/:id devuelve 404 para una tarea inexistente", async () => {
+    const idInexistente = new mongoose.Types.ObjectId();
+
+    const res = await request(app).delete(`/api/tareas/${idInexistente}`);
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty("error");
+  });
 });
